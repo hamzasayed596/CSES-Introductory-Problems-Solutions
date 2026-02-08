@@ -1,1 +1,1 @@
-# CSES-Introductory-Problems-Solutions-
+# CSES-Introductory-Problems-Solutions

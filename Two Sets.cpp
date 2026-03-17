@@ -1,0 +1,67 @@
+/*****************************************************************************************
+* ﷽ *
+   ﴾ رَبِّ اشْرَحْ لِي صَدْرِي * وَيَسِّرْ لِي أَمْرِي * وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي * يَفْقَهُوا قَوْلِي ﴿
+
+  ██   ██  █████  ███    ███ ███████  █████      ███████  █████  ██    ██ ███████ ██████
+  ██   ██ ██   ██ ████  ████    ███  ██   ██     ██      ██   ██  ██  ██  ██      ██   ██
+  ███████ ███████ ██ ████ ██   ███   ███████     ███████ ███████   ████   █████   ██   ██
+  ██   ██ ██   ██ ██  ██  ██  ███    ██   ██          ██ ██   ██    ██    ██      ██   ██
+  ██   ██ ██   ██ ██      ██ ███████ ██   ██     ███████ ██   ██    ██    ███████ ██████
+*****************************************************************************************/
+#include <bits/stdc++.h>
+using namespace std;
+#define endl "\n"
+#define NeedForSpeed ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0);
+#define all(v) (v).begin(), (v).end()
+#define rall(v) (v).rbegin(), (v).rend()
+typedef long double ld; typedef long long ll; typedef unsigned long long ull;
+typedef __int128_t i128; typedef unsigned __int128 u128;
+const ll dy[] = {0, 0, -1, 1}; const ll dx[] = {-1, 1, 0, 0};
+const ll MOD = 1e9+7; const ll INF = 1e9; const ll LINF = 1e18; const ll MAX = 1e6;
+
+void solve() {
+    ll n;
+    cin >> n;
+    if (n * (n + 1) / 2 % 2) {
+        cout << "NO" << endl;
+    }
+    else {
+        ll x = n * (n + 1) / 2, c = 0;
+        x /= 2;
+        ll arr[n];
+        for (ll i = 0; i < n; i++) {
+            arr[i] = i + 1;
+        }
+        ll sum = 0;
+        for (ll i = n - 1; i >= 0; i--) {
+            if (sum + arr[i] <= x) {
+                sum += arr[i];
+                arr[i] = 0;
+                c++;
+            }
+        }
+        cout << "YES" << endl << n - c << endl;
+        for (ll i = 0; i < n; i++) {
+            if (arr[i]) {
+                cout << arr[i] << " ";
+            }
+        }
+        cout << endl << c << endl;
+        for (ll i = 0; i < n; i++) {
+            if (arr[i] == 0) {
+                cout << i + 1 << " ";
+            }
+        }
+        cout << endl;
+    }
+
+}
+
+signed main() {
+    NeedForSpeed;
+    int t = 1;
+    //cin >> t;
+    while (t--) {
+        solve();
+    }
+}

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSES Introductory Problems Solutions</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
+    <style>
+        body{
+            font-family: system-ui, sans-serif;
+            height:100vh;
+            display:flex;
+            flex-direction:column;
+            background:#000;
+            color:#fff;
+        }
+        .header{
+            padding:10px 20px;
+            display:flex;
+            justify-content:space-between;
+            border-bottom:1px solid #444;
+        }
+        .header button{
+            background: transparent;
+            border: 1px solid currentColor;
+            width:100px;
+            height:50px;
+            color: currentColor;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .container{
+            flex:1;
+            display:flex;
+            overflow:hidden;
+        }
+        .sidebar{
+            width:260px;
+            background:#1a1a1a;
+            overflow-y:auto;
+            padding:15px;
+        }
+        .buttons{
+            display:flex;
+            gap:10px;
+        }
+        .file{
+            padding:10px;
+            border-radius:5px;
+            cursor:pointer;
+            font-family:monospace;
+        }
+        .file:hover{
+            background:#2a2a2a;
+        }
+        .file.active{
+            background:#333;
+            font-weight:bold;
+        }
+        .main{
+            flex:1;
+            padding:20px;
+            overflow:auto;
+            position:relative;
+        }
+        pre{
+            padding:1em;
+            border-radius:6px;
+            overflow:auto;
+        }
+        .copy{
+            position:absolute;
+            right:25px;
+            top:25px;
+            padding:5px 10px;
+            border:1px solid #888;
+            background:transparent;
+            color:#fff;
+            cursor:pointer;
+        }
+        .hljs-keyword{color:#ff79c6}
+        .hljs-built_in{color:#8be9fd}
+        .hljs-type{color:#8be9fd}
+        .hljs-literal{color:#bd93f9}
+        .hljs-number{color:#bd93f9}
+        .hljs-string{color:#f1fa8c}
+        .hljs-comment{color:#6272a4}
+        .hljs-function{color:#50fa7b}
+        .hljs-title{color:#50fa7b}
+        .light{
+            background:#fff;
+            color:#000;
+        }
+        .light .sidebar{
+            background:#f0f0f0;
+        }
+        .light .file:hover{background:#ddd}
+        .light .file.active{background:#ccc}
+        .light .copy{color:#000}
+        .light .hljs-keyword{color:#d73a49}
+        .light .hljs-built_in{color:#005cc5}
+        .light .hljs-type{color:#905}
+        .light .hljs-literal{color:#005cc5}
+        .light .hljs-number{color:#005cc5}
+        .light .hljs-string{color:#22863a}
+        .light .hljs-comment{color:#6a737d}
+        .light .hljs-function{color:#6f42c1}
+        .light .hljs-title{color:#6f42c1}
+    </style>
+</head>
+<body>
+<div class="header">
+    <h2>CSES Introductory Problems Solutions</h2>
+    <div class="buttons">
+        <button id="toggle">Light mode</button>
+        <button id="go">Go to problem</button>
+    </div>
+</div>
+<div class="container">
+    <div class="sidebar" id="list"></div>
+    <div class="main" id="viewer">
+        <p>choose a problem</p>
+    </div>
+</div>
+<script>
+    const files=[
+        "Weird Algorithm.cpp",
+        "Missing Number.cpp",
+        "Repetitions.cpp",
+        "Increasing Array.cpp",
+        "Permutations.cpp",
+        "Number Spiral.cpp",
+        "Two Knights.cpp",
+        "Two Sets.cpp",
+        "Bit Strings.cpp",
+        "Trailing Zeros.cpp",
+        "Coin Piles.cpp",
+        "Palindrome Reorder.cpp",
+        "Gray Code.cpp",
+        "Tower of Hanoi.cpp",
+        "Creating Strings.cpp",
+        "Apple Division.cpp",
+        "Chessboard and Queens.cpp",
+        "Mex Grid Construction.cpp",
+        "Digit Queries.cpp",
+        "Grid Path Description.cpp"
+    ];
+    const problemlinks=[
+        "https://cses.fi/problemset/task/1068",
+        "https://cses.fi/problemset/task/1083",
+        "https://cses.fi/problemset/task/1069",
+        "https://cses.fi/problemset/task/1094",
+        "https://cses.fi/problemset/task/1070",
+        "https://cses.fi/problemset/task/1071",
+        "https://cses.fi/problemset/task/1072",
+        "https://cses.fi/problemset/task/1092",
+        "https://cses.fi/problemset/task/1617",
+        "https://cses.fi/problemset/task/1618",
+        "https://cses.fi/problemset/task/1754",
+        "https://cses.fi/problemset/task/1755",
+        "https://cses.fi/problemset/task/2205",
+        "https://cses.fi/problemset/task/2165",
+        "https://cses.fi/problemset/task/1622",
+        "https://cses.fi/problemset/task/1623",
+        "https://cses.fi/problemset/task/1624",
+        "https://cses.fi/problemset/task/3419",
+        "https://cses.fi/problemset/task/2431",
+        "https://cses.fi/problemset/task/1625"
+    ];
+    let currentlink=null;
+    const list=document.getElementById("list");
+    const viewer=document.getElementById("viewer");
+    const toggle=document.getElementById("toggle");
+    const gobtn=document.getElementById("go")
+    function loadFile(name,index,element){
+        document.querySelectorAll(".file").forEach(f=>f.classList.remove("active"));
+        element.classList.add("active");
+        currentlink=problemlinks[index];
+        fetch(name)
+            .then(r=>r.text())
+            .then(code=>{
+                viewer.innerHTML="";
+                const pre=document.createElement("pre");
+                const codeTag=document.createElement("code");
+                codeTag.className="language-cpp";
+                codeTag.textContent=code;
+                pre.appendChild(codeTag);
+                viewer.appendChild(pre);
+                const copy=document.createElement("button");
+                copy.className="copy";
+                copy.textContent="copy";
+                copy.onclick=()=>{
+                    navigator.clipboard.writeText(code);
+                    copy.textContent="copied";
+                    setTimeout(()=>copy.textContent="copy",1200);
+                }
+                viewer.appendChild(copy);
+                hljs.highlightElement(codeTag);
+            });
+    }
+    files.forEach((name,index)=>{
+        const div=document.createElement("div");
+        div.className="file";
+        div.textContent=name;
+        div.onclick=()=>loadFile(name,index,div);
+        list.appendChild(div);
+    });
+    if(files.length){
+        document.querySelector(".file").click();
+    }
+    gobtn.onclick=()=>{
+        if(currentlink){
+            window.open(currentlink);
+        }
+    };
+    toggle.onclick=()=>{
+        document.body.classList.toggle("light");
+        if(document.body.classList.contains("light"))
+            toggle.textContent="Dark mode";
+        else
+            toggle.textContent="Light mode";
+    }
+</script>
+</body>
+</html>
